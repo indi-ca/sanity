@@ -6,12 +6,22 @@ import Control.Concurrent.Chan
 import Control.Monad
 import Control.Monad.Fix (fix)
 
+import System.Log.Logger
+import System.Log.Handler.Syslog
+import System.Log.Handler.Simple
+import System.Log.Handler (setFormatter)
+import System.Log.Formatter
+
+
 type Msg = (Int, String)
 
 port = 62505
 
 main :: IO ()
 main = do
+    s <- openlog "SyslogStuff" [PID] USER DEBUG
+    updateGlobalLogger rootLoggerName (addHandler s)
+
     chan <- newChan
     sock <- socket AF_INET Stream 0
     setSocketOption sock ReuseAddr 1
@@ -33,5 +43,8 @@ runConn (sock, _) chan nr = do
     let broadcast msg = writeChan chan (nr, msg)
     hdl <- socketToHandle sock ReadWriteMode
     hSetBuffering hdl NoBuffering
+    action <- liftM init (hGetLine hdl)
+    debugM "Sanity.Responder" $ "Got request: " ++  action
+    hPutStrLn hdl action
     hPutStrLn hdl "OK"
     hClose hdl
