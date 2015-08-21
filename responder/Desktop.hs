@@ -1,4 +1,4 @@
-module Desktop (switchDesktop, activate) where
+module Desktop (switchDesktop, activate, sublime) where
 
 import Data.Time.Clock (NominalDiffTime)
 import System.Exit (ExitCode)
@@ -16,3 +16,6 @@ switchDesktop x = runAppleScript [switchScript, keys !! (x - 1)]
 
 activate :: String -> IO (NominalDiffTime, Maybe (ExitCode, String, String))
 activate app = runAppleScript [activateScript, app]
+
+sublime :: IO (NominalDiffTime, Maybe (ExitCode, String, String))
+sublime = runAppleScript ["../scripts/write.scpt", ""]
