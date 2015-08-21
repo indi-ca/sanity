@@ -19,5 +19,4 @@ on run argv
             end if
         end repeat
     end tell
-
 end run
