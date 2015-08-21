@@ -4,7 +4,9 @@ import Control.Monad.Fix (fix)
 import Network.Socket
 import System.IO
 import System.Log.Logger
-import System.Log.Handler.Syslog
+import System.Log.Handler.Simple
+import System.Log.Formatter (simpleLogFormatter)
+import System.Log.Handler (setFormatter)
 
 import Desktop (activate, switchDesktop, sublime)
 
@@ -14,8 +16,13 @@ port = 62505
 
 main :: IO ()
 main = do
-    s <- openlog "SyslogStuff" [PID] USER DEBUG
-    updateGlobalLogger rootLoggerName (addHandler s)
+    h <- fileHandler "/Users/indika/Library/Logs/sanity.log" DEBUG >>= \lh -> return $
+        setFormatter lh (simpleLogFormatter "[$time : $loggername : $prio] $msg")
+    updateGlobalLogger rootLoggerName (addHandler h)
+    updateGlobalLogger "Sanity.Responder"
+                       (setLevel DEBUG)
+
+    infoM "Sanity.Responder" $ "Logging has started"
 
     chan <- newChan
     sock <- socket AF_INET Stream 0
