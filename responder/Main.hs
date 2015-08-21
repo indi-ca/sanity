@@ -1,16 +1,16 @@
 import Network.Socket
 import System.IO
-import Control.Exception
+-- import Control.Exception
 import Control.Concurrent
-import Control.Concurrent.Chan
+-- import Control.Concurrent.Chan
 import Control.Monad
 import Control.Monad.Fix (fix)
 
 import System.Log.Logger
 import System.Log.Handler.Syslog
-import System.Log.Handler.Simple
-import System.Log.Handler (setFormatter)
-import System.Log.Formatter
+-- import System.Log.Handler.Simple
+-- import System.Log.Handler (setFormatter)
+-- import System.Log.Formatter
 
 
 type Msg = (Int, String)
