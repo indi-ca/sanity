@@ -1,16 +1,11 @@
 import Network.Socket
 import System.IO
--- import Control.Exception
 import Control.Concurrent
--- import Control.Concurrent.Chan
 import Control.Monad
 import Control.Monad.Fix (fix)
 
 import System.Log.Logger
 import System.Log.Handler.Syslog
--- import System.Log.Handler.Simple
--- import System.Log.Handler (setFormatter)
--- import System.Log.Formatter
 
 import Desktop (activate, switchDesktop)
 
@@ -33,6 +28,7 @@ main = do
         loop
     mainLoop sock chan 0
 
+
 mainLoop :: Socket -> Chan Msg -> Int -> IO ()
 mainLoop sock chan nr = do
     conn <- accept sock
@@ -40,10 +36,19 @@ mainLoop sock chan nr = do
     mainLoop sock chan $! nr+1
 
 
-perform :: String -> IO ()
-perform action = do
+perform :: String -> Handle -> IO ()
+perform "ping" handle = hPutStrLn handle "pong"
+perform "F2" handle = do
     switchDesktop 2
     activate "Slack"
+    return ()
+perform "F3" handle = do
+    switchDesktop 2
+    activate "LimeChat"
+    return ()
+perform action handle = do
+    switchDesktop 5
+    putStrLn action
     return ()
 
 
@@ -53,8 +58,6 @@ runConn (sock, _) chan nr = do
     hdl <- socketToHandle sock ReadWriteMode
     hSetBuffering hdl NoBuffering
     action <- liftM init (hGetLine hdl)
-    perform action
+    perform action hdl
     debugM "Sanity.Responder" $ "Got request: " ++  action
-    hPutStrLn hdl action
-    hPutStrLn hdl "OK"
     hClose hdl
