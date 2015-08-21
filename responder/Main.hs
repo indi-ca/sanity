@@ -9,10 +9,13 @@ import System.Log.Formatter (simpleLogFormatter)
 import System.Log.Handler (setFormatter)
 
 import WindowManager (perform)
+import State (State)
 
 type Msg = (Int, String)
 
 port = 62505
+
+
 
 main :: IO ()
 main = do
@@ -32,18 +35,18 @@ main = do
     forkIO $ fix $ \loop -> do
         (_, msg) <- readChan chan
         loop
-    mainLoop sock chan 0
+    mainLoop "inital_state" sock chan 0
 
 
-mainLoop :: Socket -> Chan Msg -> Int -> IO ()
-mainLoop sock chan nr = do
+mainLoop :: State -> Socket -> Chan Msg -> Int -> IO ()
+mainLoop state sock chan nr = do
     conn <- accept sock
-    runConn conn chan 0
-    mainLoop sock chan $! nr+1
+    state' <- runConn state conn chan 0
+    mainLoop state' sock chan $! nr+1
 
 
-runConn :: (Socket, SockAddr) -> Chan Msg -> Int -> IO ()
-runConn (sock, _) chan nr = do
+runConn :: State -> (Socket, SockAddr) -> Chan Msg -> Int -> IO (State)
+runConn state (sock, _) chan nr = do
     let broadcast msg = writeChan chan (nr, msg)
     hdl <- socketToHandle sock ReadWriteMode
     hSetBuffering hdl NoBuffering
@@ -51,3 +54,4 @@ runConn (sock, _) chan nr = do
     perform action hdl
     debugM "Sanity.Responder" $ "Got request: " ++  action
     hClose hdl
+    return state
