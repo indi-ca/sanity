@@ -31,7 +31,6 @@ main = do
     sock <- socket AF_INET Stream 0
     -- make socket immediately reusable - eases debugging.
     setSocketOption sock ReuseAddr 1
-    -- listen on TCP port 4242
     bindSocket sock (SockAddrInet port iNADDR_ANY)
     -- allow a maximum of 2 outstanding connections
     listen sock 2
@@ -49,8 +48,10 @@ runConn (sock, _) = do
     hdl <- socketToHandle sock ReadWriteMode
     hSetBuffering hdl NoBuffering
     action <- liftM init (hGetLine hdl)
-    perform action hdl
     debugM "Sanity.Responder" $ "Got request: " ++  action
-    hPutStrLn hdl "OK"
+
+    perform action hdl
+    -- I will stick to one response per action
+    -- hPutStrLn hdl "OK\r\n"
     hClose hdl
 
