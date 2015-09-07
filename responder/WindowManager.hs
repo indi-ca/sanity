@@ -18,8 +18,17 @@ perform "c" handle = do
 perform "e" handle = do
   activate "Emacs"
   hPutStrLn handle "OK\r\n"
+perform "f" handle = do
+  activate "Firefox"
+  hPutStrLn handle "OK\r\n"
+perform "o" handle = do
+  activate "OmniGraffle"
+  hPutStrLn handle "OK\r\n"
 perform "s" handle = do
   activate "Sublime Text"
+  hPutStrLn handle "OK\r\n"
+perform "p" handle = do
+  activate "PyCharm"
   hPutStrLn handle "OK\r\n"
 
 perform "F1" handle = do
