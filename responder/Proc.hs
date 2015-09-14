@@ -26,11 +26,11 @@ runTask tmout progname args = do
     (time, res) <- timeIO . timeout tmout $ readProcessWithExitCode progname args []
     return (time, res)
 
-runAppleScript :: [String] -> IO ( (NominalDiffTime, Maybe (ExitCode, String, String)) )
-runAppleScript args = runTask tmout "osascript" args
-
 runGeneric :: String -> [String] -> IO ( (NominalDiffTime, Maybe (ExitCode, String, String)) )
 runGeneric progname args = runTask tmout progname args
+
+runAppleScript :: [String] -> IO ( (NominalDiffTime, Maybe (ExitCode, String, String)) )
+runAppleScript args = runTask tmout "osascript" args
 
 main :: IO ()
 main = do
