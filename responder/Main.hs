@@ -16,7 +16,6 @@ type Msg = (Int, String)
 port = 62505
 
 
-
 main :: IO ()
 main = do
     h <- fileHandler "/Users/indika/Library/Logs/sanity.log" DEBUG >>= \lh -> return $
