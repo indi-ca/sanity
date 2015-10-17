@@ -46,6 +46,7 @@ mainLoop sock = do
 runConn (sock, _) = do
     hdl <- socketToHandle sock ReadWriteMode
     hSetBuffering hdl NoBuffering
+    -- TODO: Why am I calling init?
     action <- liftM init (hGetLine hdl)
     debugM "Sanity.Responder" $ "Got request: " ++  action
 
